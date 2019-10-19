@@ -19,13 +19,16 @@
 
 {% block content %}
     <table id="bill_table" class="split_bills table table-striped">
-        <thead><tr><th>{{ _("Who pays?") }}</th><th>{{ _("To whom?") }}</th><th>{{ _("How much?") }}</th></tr></thead>
+        <thead><tr><th>{{ _("Who pays?") }}</th><th>{{ _("To whom?") }}</th><th>{{ _("How much?") }}</th><th>{{ _("Actions") }}</th></tr></thead>
     <tbody>
     {% for bill in bills %}
     <tr receiver={{bill.receiver.id}}>
             <td>{{ bill.ower }}</td>
             <td>{{ bill.receiver }}</td>
             <td>{{ "%0.2f"|format(bill.amount) }}</td>
+            <td class="table-actions">
+                <a class="payment" href="{{ url_for(".add_payment", ower=bill.ower.id, receiver=bill.receiver.id, amount=bill.amount) }}" title="{{ _("pay") }}">{{ _('pay') }}</a>
+            </td>
     </tr>
     {% endfor %}
     </tbody>

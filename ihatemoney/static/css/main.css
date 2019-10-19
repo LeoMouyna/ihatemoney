@@ -283,14 +283,15 @@ footer .footer-left {
   color: red;
 }
 
-.bill-actions {
+.table-actions {
   padding-top: 10px;
   text-align: center;
 }
 
-.bill-actions > .delete,
-.bill-actions > .edit,
-.bill-actions > .see {
+.table-actions > .delete,
+.table-actions > .edit,
+.table-actions > .see,
+.table-actions > .payment {
   font-size: 0px;
   display: block;
   width: 16px;
@@ -300,16 +301,20 @@ footer .footer-left {
   float: left;
 }
 
-.bill-actions > .delete {
+.table-actions > .delete {
   background: url("../images/delete.png") no-repeat right;
 }
 
-.bill-actions > .edit {
+.table-actions > .edit {
   background: url("../images/edit.png") no-repeat right;
 }
 
-.bill-actions > .see {
+.table-actions > .see {
   background: url("../images/see.png") no-repeat right;
+}
+
+.table-actions > .payment {
+  background: url("../images/payment.png") no-repeat right;
 }
 
 #bill_table {

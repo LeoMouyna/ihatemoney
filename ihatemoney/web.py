@@ -31,6 +31,7 @@ from smtplib import SMTPRecipientsRefused
 from werkzeug.exceptions import NotFound
 from sqlalchemy import orm
 from functools import wraps
+from datetime import datetime
 
 from ihatemoney.models import db, Project, Person, Bill
 from ihatemoney.forms import (
@@ -641,6 +642,28 @@ def settle_bill():
     """Compute the sum each one have to pay to each other and display it"""
     bills = g.project.get_transactions_to_settle_bill()
     return render_template("settle_bills.html", bills=bills, current_view="settle_bill")
+
+
+@main.route("/<project_id>/payment/add/<int:ower>/<int:receiver>/<float:amount>", methods=["GET"])
+def add_payment(ower, receiver, amount):
+    print(g.project)
+    receiver = Person.query.get(receiver, g.project)
+
+    if not receiver:
+        raise NotFound("Person with id: {} not found".format(receiver))
+
+    payment = Bill()
+    payment.payer_id = ower
+    payment.amount = amount
+    payment.what = _("Refund")
+    payment.date = datetime.now()
+    payment.owers = [receiver]
+
+    db.session.add(payment)
+    db.session.commit()
+
+    flash(_("The payment has been added"))
+    return redirect(url_for(".settle_bill"))
 
 
 @main.route("/<project_id>/statistics")
