@@ -11,6 +11,8 @@ from flask import redirect, current_app
 from babel import Locale
 from werkzeug.routing import HTTPException, RoutingException
 from datetime import datetime, timedelta
+from fractions import Fraction
+from decimal import Decimal
 
 
 import csv
@@ -71,7 +73,7 @@ class PrefixedWSGI(object):
             environ["SCRIPT_NAME"] = script_name
             path_info = environ["PATH_INFO"]
             if path_info.startswith(script_name):
-                environ["PATH_INFO"] = path_info[len(script_name) :]  # NOQA
+                environ["PATH_INFO"] = path_info[len(script_name):]  # NOQA
 
         scheme = environ.get("HTTP_X_SCHEME", "")
         if scheme:
@@ -206,6 +208,41 @@ class IhmJSONEncoder(JSONEncoder):
             except ImportError:
                 pass
             return JSONEncoder.default(self, o)
+
+
+class SuperFraction(Fraction):
+    def to_decimal(self):
+        return Decimal(self.numerator) / Decimal(self.denominator)
+
+    def __add__(a, b):
+        """a + b"""
+        da, db = a.denominator, b.denominator
+        return SuperFraction(a.numerator * db + b.numerator * da,
+                             da * db)
+
+    __radd__ = __add__
+
+    def __sub__(a, b):
+        """a - b"""
+        da, db = a.denominator, b.denominator
+        return SuperFraction(a.numerator * db - b.numerator * da,
+                             da * db)
+
+    __rsub__ = __sub__
+
+    def __mul__(a, b):
+        """a * b"""
+        return SuperFraction(a.numerator * b.numerator, a.denominator * b.denominator)
+
+    __rmul__ = __mul__
+
+    def __div__(a, b):
+        """a / b"""
+        return SuperFraction(a.numerator * b.denominator,
+                             a.denominator * b.numerator)
+
+    __truediv__ = __div__
+    __rtruediv__ = __div__
 
 
 def eval_arithmetic_expression(expr):
